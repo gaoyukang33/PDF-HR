@@ -1,0 +1,846 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+    content="PDF-HR: Plug-and-Play Pose Distance Fields for Humanoid Robots">
+  <meta name="keywords" content="Robotics, Whole-body Control, PDF-HR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>
+    PDF-HR: Plug-and-Play Pose Distance Fields for Humanoid Robots
+  </title>
+
+  <link rel="icon" href="./static/images/icon.png">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZ38WT2YPD"></script>
+
+  <script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']] 
+         }
+      };
+  </script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://kit.fontawesome.com/19914a84eb.js" crossorigin="anonymous"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/interpolation.js"></script>
+  <style>
+    .image-container {
+    width: 100%;
+    padding-top: 100%; 
+    position: relative;
+    overflow: hidden;
+    }
+
+    .image-container img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      object-fit: cover; 
+    }
+  
+  .card-module {
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
+    display: block; 
+    text-decoration: none !important; 
+    color: inherit !important; 
+    cursor: pointer;
+  }
+
+  .card-module:hover {
+    transform: scale(1.08); 
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important; 
+    z-index: 10; 
+    position: relative;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+
+  section {
+    scroll-margin-top: 80px; 
+  }
+
+  .card-module {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: block;
+    text-decoration: none !important;
+    color: inherit !important;
+    cursor: pointer;
+  }
+
+  .card-module:hover {
+    transform: scale(1.08);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+    z-index: 10;
+    position: relative;
+  }
+.floating-nav {
+  position: fixed;
+  right: 20px;
+  top: 50%; 
+  transform: translateY(-50%);
+  z-index: 1000; 
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+}
+
+.floating-nav-trigger {
+  width: 50px;
+  height: 50px;
+  background-color: #3273dc; 
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+}
+
+.floating-nav:hover .floating-nav-trigger {
+  transform: scale(1.1);
+}
+
+.floating-nav-content {
+  background: white;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  margin-right: 15px; 
+  
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(20px); 
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.floating-nav:hover .floating-nav-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.floating-nav-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: center; 
+}
+
+.floating-nav-menu li {
+  margin-bottom: 10px;
+}
+
+.floating-nav-menu li:last-child {
+  margin-bottom: 0;
+}
+
+.floating-nav-link {
+  color: #4a4a4a;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+  display: block;
+}
+
+.floating-nav-link:hover,
+.floating-nav-link.active {
+  color: #3273dc; 
+  font-weight: bold;
+}
+
+.publication-authors a {
+  color: inherit;         
+  text-decoration: none;   
+}
+
+.publication-authors a:hover {
+  text-decoration: underline;
+}
+
+
+
+  </style>
+
+
+
+
+</head>
+
+<nav class="floating-nav" id="floatingNav">
+  <div class="floating-nav-trigger">
+    <i class="fas fa-bars"></i> </div>
+  
+  <div class="floating-nav-content">
+    <ul class="floating-nav-menu">
+      <li><a href="#top-video" class="floating-nav-link">Video</a></li>
+      
+      <li><a href="#abstract" class="floating-nav-link">Abstract</a></li>
+      <li><a href="#method" class="floating-nav-link">Method</a></li>
+      
+      <li><a href="#tracking" class="floating-nav-link">Motion Tracking</a></li>
+      
+      <li><a href="#retargeting" class="floating-nav-link">Motion Retargeting</a></li>
+      
+      <li><a href="#denoising" class="floating-nav-link">Pose Denoising</a></li>
+      
+      <li><a href="#ik" class="floating-nav-link">HL-IK</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!--Top video-->
+<section class="hero is-link is-fullheight video" style="overflow: hidden; position:relative;" id = "top-video">
+  
+  <div class="hero-video" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;">
+    <video playsinline autoplay muted loop style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+      <source src="./static/videos/top.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
+
+  <div class="hero-body" style="position: relative; z-index: 2;">
+    <div class="container has-text-centered">
+      <h1 class="title is-1 publication-title is-size-1-mobile" style="font-size: 10rem; color:black;font-weight: 700;">
+        PDF-HR
+      </h1>
+      <h1 class="subtitle is-1 publication-title is-size-4-mobile" style="font-size: 4rem; color:black;font-weight: 600;">
+        Pose Distance Fields for Humanoid
+      </h1>
+      <h1 class="subtitle is-1 publication-title is-size-4-mobile" style="font-size: 4rem; color:black;font-weight: 600;">
+        Robots
+      </h1>
+      <div class="column has-text-centered is-hidden-tablet">
+        <div class="publication-links">
+          <!-- PDF Link. -->
+          <span class="link-block">
+            <a href="./static/asap.pdf" class="external-link button is-normal is-rounded is-dark">
+              <span class="icon">
+                <img src="./static/images/pdf.svg" alt="PDF" />
+              </span>
+              <span>Paper</span>
+            </a>
+          </span>
+          <span class="link-block">
+            <a href="https://arxiv.org/abs/2502.01143" class="external-link button is-normal is-rounded is-dark">
+              <span class="icon">
+                <img src="./static/images/arxiv.svg" alt="ArXiv" />
+              </span>
+              <span>arXiv</span>
+            </a>
+          </span>
+          <!-- Code Link. -->
+          <span class="link-block">
+            <a href="https://github.com/LeCAR-Lab/ASAP"
+              class="external-link button is-normal is-rounded is-dark">
+              <span class="icon">
+                <i class="fab fa-github"></i>
+              </span>
+              <span>Code</span>
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!--Author List-->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title" style="max-width: 80%; margin: 0 auto; margin-bottom: 40px; " ><span style ="color:steelblue">PDF-HR</span>: Pose Distance Fields for Humanoid Robots</h1>
+
+          <div class="is-size-4 publication-authors " >
+            <span class="author-block" style="font-size: 95%;">
+              <a>Yi Gu</a>&nbsp;&nbsp;
+              <a>Yukang Gao</a>&nbsp;&nbsp;
+              <a>Yangchen Zhou</a>&nbsp;&nbsp;
+              <a >Xingyu Chen</a>&nbsp;&nbsp;
+              <a >Yixiao Feng</a>&nbsp;&nbsp;
+              <br>
+              <a>Mingle Zhao</a>&nbsp;&nbsp;
+              <a>Yunyang Mo</a>&nbsp;&nbsp;
+              <a>Zhaorui Wang</a>&nbsp;&nbsp;
+              <a>Lixin Xu</a>&nbsp;&nbsp;
+              <a href="https://facultyprofiles.hkust-gz.edu.cn/faculty-personal-page?id=97">Renjing Xu</a>*&nbsp;&nbsp;
+          </div>
+
+          <div class="column">
+            <!-- <h1> The Hong Kong Unbiversity of Science and Technology(GuangZhou)</h1> -->
+            <image src="./static/images/logo.png" style="width: 20%;"></image>
+         </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="./static/asap.pdf"
+                   class="external-link button is-normal is-rounded is-dark" target="_blank">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>PDF</span>
+                </a>
+              </span>
+              <!-- arXiv Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark" target="_blank">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>ArXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+  
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="" class="external-link button is-normal is-rounded is-dark" target="_blank">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Abstract. -->
+
+<section class="section" style="margin-top: 3rem;" id="abstract">
+  <div class="container">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-2">Abstract</h2>
+        <div class="content has-text-justified" style="margin-top: 3rem; font-size: 1rem;max-width: 70%;margin: 0 auto">
+          <p>
+            Pose and motion priors play a crucial role in humanoid robotics. Although such priors have been widely studied in human motion recovery (HMR) domain 
+            with a range of models, their adoption for humanoid robots remains limited, largely due to the scarcity of high-quality humanoid motion data. In this work,
+             we introduce Pose Distance Fields for Humanoid Robots (PDF-HR), a lightweight prior that represents the robot pose distribution as a continuous and differentiable manifold. 
+             Given an arbitrary pose, PDF-HR predicts its distance to a large corpus of retargeted robot poses, yielding a smooth measure of pose plausibility that is well suited for 
+             optimization and control. PDF-HR can be integrated as a reward shaping term, a regularizer, or a standalone plausibility scorer across diverse pipelines. We evaluate PDF-HR 
+             on various humanoid tasks, including single-trajectory motion tracking, general motion tracking, style-based motion mimicry, and general motion retargeting. Experiments show 
+             that this plug-and-play prior consistently and substantially strengthens strong baselines. Code and models will be released.
+  
+          </p>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section" style="margin-top: 0rem;background-color: #fafafa;" id="method">
+  <div class="container">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-2">Method Overview</h2>
+        <div class="content has-text-justified" style="margin-top: 3rem; font-size: 1rem;max-width: 60%;margin: 0 auto">
+        <div class="columns is-centered >
+            <div class="column is-full" style="margin-top: 3rem;margin-bottom: 1rem;">
+                <img src="./static/images/pipeline.png" alt="" style="width: 100%;" />
+            </div>
+        </div>
+        <div class="content has-text-justified" style="margin-top: 1rem; font-size: 1rem;max-width: 70%;margin: 0 auto">
+          <p>
+            As shown in pipeline, we learn the manifold of plausible G1 poses as a zero-level set. 
+                  <i>Left</i>: The network $f_\phi$ approximates the unsigned pose distance field. For a query pose $\mathbf{q}$, it regresses the distance $d$ to the nearest dataset sample. 
+                  <i>Right</i>: The prior quantifies plausibility, where higher $f_\phi(\mathbf{q})$ values indicate significant deviation from the manifold (unnatural poses). This metric effectively guides optimization in downstream motion tasks.
+          </p>
+        </div>
+         <p class="has-text-centered is-size-3"
+          style="max-width: 90%; margin: 0 auto 30px auto;font-weight: 900;margin-top: 3rem;">
+          Applications:
+        </p>
+        
+      </div>
+    </div>
+    <div class="cards-grid" style="
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+      ">
+
+        <a href="#tracking" class="card-module" style="
+              background: white;
+              padding: 30px;
+              border-radius: 14px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+              width: 250px;
+              height: 150px;
+              text-align: center;  
+            ">
+          <div class="card-title" style="font-size: 1.25em; font-weight: bold; margin-bottom: 10px; color: #004bb3;">
+            Motion Tracking
+          </div>
+          <div class="card-subtitle" style="font-size: 0.9em; margin-bottom: 15px; color: #555;">
+            Accelerate convergence for RL-based motion tracking
+          </div>
+        </a>
+
+        <a href="#retargeting" class="card-module" style="
+              background: white;
+              padding: 30px;
+              border-radius: 14px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+              width: 250px;
+              height: 150px;
+              text-align: center;  
+            ">
+          <div class="card-title" style="font-size: 1.25em; font-weight: 600; margin-bottom: 10px; color: #004bb3;">
+            Motion Retargeting
+          </div>
+          <div class="card-subtitle" style="font-size: 0.9em; margin-bottom: 15px; color: #555;">
+            Produce more natural and human-like motions
+          </div>
+        </a>
+
+        <a href="#denoising" class="card-module" style="
+              background: white;
+              padding: 30px;
+              border-radius: 14px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+              width: 250px;
+              height: 150px;
+              text-align: center;  
+            ">
+          <div class="card-title" style="font-size: 1.25em; font-weight: 600; margin-bottom: 10px; color: #004bb3;">
+            Pose Denoising
+          </div>
+          <div class="card-subtitle" style="font-size: 0.9em; margin-bottom: 15px; color: #555;">
+            Optimizatize physically implausible poses
+          </div>
+        </a>
+
+        <a href="#ik" class="card-module" style="
+              background: white;
+              padding: 30px;
+              border-radius: 14px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+              width: 250px;
+              height: 150px;
+              text-align: center;  
+            ">
+          <div class="card-title" style="font-size: 1.25em; font-weight: 600; margin-bottom: 10px; color: #004bb3;">
+            Human-Like IK
+          </div>
+          <div class="card-subtitle" style="font-size: 0.9em; margin-bottom: 15px; color: #555;">
+            Generate more natural and plausible poses
+          </div>
+        </a>
+
+      </div>
+    
+  
+    </div>
+
+  </div>
+</section>
+
+
+
+<section class="section" id="tracking">
+
+  <!-- Title outside the card -->
+  <h2 class="title is-2"
+    style="text-align: center; padding-bottom: 25px; color:#004bb3">
+    Motion Tracking
+  </h2>
+
+  <!-- Card container -->
+  <div class="container"
+    style="
+      max-width: 80%;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    ">
+
+    <div class="columns is-centered">
+      <div class="column is-full">
+
+        <p class="has-text-centered is-size-5"
+          style="max-width: 90%; margin: 0 auto 30px auto;margin-bottom: 0rem;">
+          <span style="font-weight: 600;">Visual comparisons of motion tracking performance on dynamic skills between our method and ADD. </span>
+
+          
+        </p>
+        <p class="has-text-centered is-size-5"
+          style="max-width: 90%; margin: 0 auto 30px auto; margin-top: 0rem;">
+          The number of training samples is annotated on the left of each strip. Our method successfully masters these complex skills with remarkably fewer samples,
+           whereas the baseline frequently suffers from falls or collisions even after extensive training.
+          
+        </p>
+
+        <!-- First row -->
+        <div class="columns">
+          <div class="column">
+          <h3 class="title is-3" style="text-align: center; margin-bottom: 10px; font-size: x-large;">Backflip</h3>
+            <video autoplay muted loop playsinline controls
+              src="./static/videos/single_motion_tracking/ADD_Backflip.mp4"
+              width="100%" style="border-radius:10px;">
+            </video>
+          </div>
+          <div class="column">
+            <h3 class="title is-3" style="text-align: center; margin-bottom: 10px; font-size: x-large;">Sideflip</h3>
+            <video autoplay muted loop playsinline controls
+              src="./static/videos/single_motion_tracking/ADD_Sideflip.mp4"
+              width="100%" style="border-radius:10px;">
+            </video>
+          </div>
+        </div>
+
+        <br>
+
+        <!-- Second row -->
+        <div class="columns">
+          <div class="column">
+            <h3 class="title is-3" style="text-align: center; margin-bottom: 10px; font-size: x-large;">Speed Vault</h3>
+            <video autoplay muted loop playsinline controls
+              src="./static/videos/single_motion_tracking/ADD_Speed_Vault.mp4"
+              width="100%" style="border-radius:10px;">
+            </video>
+          </div>
+          <div class="column">
+            <h3 class="title is-3" style="text-align: center; margin-bottom: 10px; font-size: x-large;">Double Kong</h3>
+            <video autoplay muted loop playsinline controls
+              src="./static/videos/single_motion_tracking/ADD_Double_Kong.mp4"
+              width="100%" style="border-radius:10px;">
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--Motion retargeting-->
+<section class="section" id="retargeting">
+
+  <h2 class="title is-2"
+    style="text-align: center; padding-bottom: 25px; color:#004bb3">
+    Motion Retargeting
+  </h2>
+
+  <!-- Card container -->
+  <div class="container"
+    style="
+      max-width: 80%;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    ">
+
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <p class="has-text-centered is-size-3"
+          style="max-width: 90%; margin: 0 auto 30px auto;font-weight: 900;">
+          Trackability in simulation
+        </p>
+
+        <p class="has-text-centered is-size-5"
+          style="max-width: 90%; margin: 0 auto 30px auto;">
+          We benchmark our method against GMR by evaluating tracking performance in simulation using ADD. While GMR-retargeted motions frequently exhibit implausible artifacts that cause tracking failures, our approach ensures high trackability and naturalness.
+        </p>
+        <div style="display: flex; align-items: center; gap: 20px; margin: 20px 0; font-family: sans-serif; font-size: 0.95em;justify-content: center;">
+
+          <!-- Baseline color block -->
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="width: 20px; height: 20px; background-color: #CAB7BC; border-radius: 4px;"></div>
+            <span>Baseline</span>
+          </div>
+
+          <!-- SMPL color block -->
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="width: 20px; height: 20px; background-color: #A5B1C0; border-radius: 4px;"></div>
+            <span>SMPL</span>
+          </div>
+          <!-- Ours color block -->
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="width: 20px; height: 20px; background-color: #C5C1B3; border-radius: 4px;"></div>
+            <span>Ours</span>
+          </div>
+
+      </div>
+
+
+        <!-- First row -->
+        <div class="columns">
+          <div class="column">
+            <video autoplay muted loop playsinline controls
+              src="./static/videos/motion_retargeting/14_HD.mp4"
+              width="100%" style="border-radius:10px;">
+            </video>
+          </div>
+          <div class="column">
+            <video autoplay muted loop playsinline controls
+              src="./static/videos/motion_retargeting/4_HD.mp4"
+              width="100%" style="border-radius:10px;">
+            </video>
+          </div>
+        </div>
+
+        <br>
+
+        <!-- Second row -->
+        <div class="columns">
+          <div class="column">
+            <video autoplay muted loop playsinline controls
+              src="./static/videos/motion_retargeting/8_HD.mp4"
+              width="100%" style="border-radius:10px;">
+            </video>
+          </div>
+          <div class="column">
+            <video autoplay muted loop playsinline controls
+              src="./static/videos/motion_retargeting/20_HD.mp4"
+              width="100%" style="border-radius:10px;">
+            </video>
+          </div>
+        </div>
+
+        <br>
+        <p class="has-text-centered is-size-3"
+          style="max-width: 90%; margin: 0 auto 30px auto;font-weight: 900;">
+          Deployability in real world
+        </p>
+
+        <p class="has-text-centered is-size-5"
+          style="max-width: 100%; margin: 0 auto;margin-bottom: 3rem;">
+          We further evaluate deployability
+          using BeyondMimic. We select 10 motion sequences
+          and compare policies trained on GMR-retargeted data versus
+          our retargeted data. Our method successfully deploys on <span style="font-weight: 800;">9/10 </span>
+sequences, whereas GMR succeeds on only <span style="font-weight: 800;">6/10</span>. 
+        </p>
+        <tr>
+          <td>
+
+            <div class="columns"> <!-- Correct Bulma structure -->
+              <div class="column">
+                <h3 class="title is-3" style="text-align: center; margin-bottom: 10px; font-size: x-large;">GMR</h3>
+                <video autoplay muted loop playsinline controls src="./static/videos/real/GMR_2_HD.mp4" width="100%" style="border-radius:10px;"></video>
+              </div>
+              <div class="column">
+                <h3 class="title is-3" style="text-align: center; margin-bottom: 10px; font-size: x-large;">Ours</h3>
+                <video autoplay muted loop playsinline controls src="./static/videos/real/Ours_2_HD.mp4" width="100%" style="border-radius:10px;"></video>
+              </div>
+              
+            </div>
+            <br>
+
+            <div class="columns"> <!-- Correct Bulma structure -->
+              <div class="column">
+                <video autoplay muted loop playsinline controls src="./static/videos/real/GMR_4_HD.mp4" width="100%" style="border-radius:10px;"></video>
+              </div>
+              <div class="column">
+                <video autoplay muted loop playsinline controls src="./static/videos/real/Ours_4_HD.mp4" width="100%" style="border-radius:10px;"></video>
+              </div>
+            </div>
+            <br>
+            <br>
+
+            <div class="columns"> <!-- Correct Bulma structure -->
+              <div class="column">
+                <video autoplay muted loop playsinline controls src="./static/videos/real/GMR_5_HD.mp4" width="100%" style="border-radius:10px;"></video>
+              </div>
+              <div class="column">
+                <video autoplay muted loop playsinline controls src="./static/videos/real/Ours_5_HD.mp4" width="100%" style="border-radius:10px;"></video>
+              </div>
+            </div>
+            <br>
+
+          </td>
+        </tr>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<section class="section" id="denoising">
+
+  <h2 class="title is-2"
+    style="text-align: center; padding-bottom: 25px; color:#004bb3">
+   Pose Denoising
+  </h2>
+
+  <!-- Card container -->
+  <div class="container"
+    style="
+      max-width: 80%;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    ">
+
+    <div class="columns is-centered">
+      <div class="column is-full">
+
+        <p class="has-text-centered is-size-5"
+          style="max-width: 80%; margin: 0 auto 30px auto;">
+         Our method denoises unrealistic poses by projecting them onto the learned valid pose manifold. Drag the sliders below to observe the projection process.
+        </p>
+        <div class="columns is-centered is-multiline is-variable is-4">
+          
+          <div class="column is-6"> <div class="columns is-vcentered interpolation-panel">
+              <div class="column is-3 has-text-centered">
+                <div class = "image-container">
+                    <img src="./static/interpolation/pose_den/img_0.png" class="interpolation-image" alt="Start"/>
+                </div>
+                <p class="is-size-7">Noisy</p>
+              </div>
+              <div class="column interpolation-video-column">
+                <div id="interpolation-image-wrapper" class="image-container">Loading...</div>
+                <input class="slider is-fullwidth is-large is-info" id="interpolation-slider" step="1" min="0" max="100" value="0" type="range">
+              </div>
+              <div class="column is-3 has-text-centered">
+                <div class = "image-container">
+                    <img src="./static/interpolation/pose_den/img_9.png" class="interpolation-image" alt="End"/>
+                </div>
+                <p class="is-size-7 is-bold">Projected</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="column is-6">
+             <div class="columns is-vcentered interpolation-panel">
+              <div class="column is-3 has-text-centered">
+                <div class = "image-container">
+                  <img src="./static/interpolation/pose_den_1/img_0.png" class="interpolation-image" alt="Start"/>
+                </div>
+                <p class="is-size-7">Noisy</p>
+              </div>
+              <div class="column interpolation-video-column">
+                <div id="interpolation-image-wrapper-1" class="image-container">Loading...</div>
+                <input class="slider is-fullwidth is-large is-info" id="interpolation-slider-1" step="1" min="0" max="100" value="0" type="range">
+              </div>
+              <div class="column is-3 has-text-centered">
+                <div class = "image-container">
+                  <img src="./static/interpolation/pose_den_1/img_9.png" class="interpolation-image" alt="End"/>
+                </div>
+                <p class="is-size-7 is-bold">Projected</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!--Inverse Kinematics-->
+
+<section class="section" id="ik">
+
+  <h2 class="title is-2"
+    style="text-align: center; padding-bottom: 25px; color:#004bb3">
+Human-Like Inverse Kinematics  </h2>
+
+  <div class="container"
+    style="
+      max-width: 80%;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    ">
+
+    <div class="columns is-centered">
+      <div class="column is-full">
+
+        <p class="has-text-centered is-size-5"
+          style="max-width: 90%; margin: 0 auto 30px auto;">
+          We set the right-wrist end-effector to track an $\infty$-shaped trajectory. Compared to <span style="font-weight: 800;">QP-based IK (blue, left)</span>, our <span style="font-weight: 800;">PDF-HR-regularized HL-IK (gray, right)</span> yields more natural and human-like whole-arm configurations.Drag the sliders below to observe the process.
+        </p>
+        
+        <div class="columns is-centered is-multiline is-variable is-4">
+          
+          <div class="column is-4"> 
+            <div class="columns is-vcentered interpolation-panel">
+              <div class="column is-12 interpolation-video-column">
+                <div id="interpolation-image-wrapper-2" class="image-container">Loading...</div>
+                <input class="slider is-fullwidth is-large is-info" id="interpolation-slider-2" step="1" min="0" max="11" value="0" type="range" style="margin-top: 15px;">
+              </div>
+
+              </div>
+          </div>
+        </div>
+      
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<style>
+.interpolation-panel img {
+    border-radius: 5px;
+    border: 1px solid #dbdbdb; 
+}
+.image-wrapper-fix img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+</style>
+
+
+
+
+</body>
+
+</html>
